@@ -1,38 +1,66 @@
-.App {
+/* File: src/App.css */
+.app {
+  font-family: Arial, sans-serif;
   text-align: center;
+  margin: 20px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.input-section {
+  margin-bottom: 20px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.input-section input {
+  padding: 8px;
+  width: 200px;
+  margin-right: 10px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.input-section button {
+  padding: 8px 15px;
+}
+
+.item-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.item-list li {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  margin: 10px auto;
+  width: 300px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.item-list button {
+  padding: 5px 10px;
+  margin-left: 5px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.item-list button:hover {
+  opacity: 0.8;
+}
+
+.item-list button:first-child {
+  background-color: #4caf50; /* Edit button */
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.item-list button:first-child:hover {
+  background-color: #45a049;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.item-list button:last-child {
+  background-color: #ff4d4d; /* Remove button */
+  color: white;
+}
+
+.item-list button:last-child:hover {
+  background-color: #e60000;
 }
