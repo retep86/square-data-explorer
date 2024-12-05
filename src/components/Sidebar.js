@@ -2,19 +2,19 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   CreditCardIcon,
-  ChartSquareBarIcon,
+  ChartBarSquareIcon,
   UserIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   BriefcaseIcon,
-  LocationMarkerIcon,
-  DatabaseIcon,
+  MapPinIcon,
+  CircleStackIcon,
   CogIcon,
   HomeIcon,
-  ArrowCircleUpIcon,
+  ArrowUpCircleIcon,
   QuestionMarkCircleIcon,
-  ArrowCircleRightIcon,
-} from "@heroicons/react/outline";
+  ArrowRightCircleIcon,
+} from "@heroicons/react/24/outline";
 
 function Sidebar({ onSelectContent }) {
   const [expandedSection, setExpandedSection] = useState(null); // Store only one expanded section
@@ -29,7 +29,7 @@ function Sidebar({ onSelectContent }) {
     <aside className="bg-blue-600 text-white w-64 p-4 flex flex-col h-screen">
       {/* App Header */}
       <div className="flex items-center space-x-2 mb-4">
-        <DatabaseIcon className="h-8 w-8" />
+        <CircleStackIcon className="h-8 w-8" />
         <h1 className="text-1xl font-bold">Square Data Explorer</h1>
       </div>
 
@@ -93,7 +93,7 @@ function Sidebar({ onSelectContent }) {
               onClick={() => toggleSection("commerce")}
             >
               <div className="flex items-center">
-                <ChartSquareBarIcon className="h-5 w-5 mr-2" />
+                <ChartBarSquareIcon className="h-5 w-5 mr-2" />
                 <span>Commerce</span>
               </div>
               {expandedSection === "commerce" ? (
@@ -199,7 +199,7 @@ function Sidebar({ onSelectContent }) {
               onClick={() => onSelectContent("Upgrade to Pro")}
               className="flex items-center py-2 px-4 rounded hover:bg-blue-500 w-full text-left relative"
             >
-              <ArrowCircleUpIcon className="h-5 w-5 mr-2" />
+              <ArrowUpCircleIcon className="h-5 w-5 mr-2" />
               Upgrade
               <span className="ml-auto text-sm bg-red-500 text-white px-2 py-0.5 rounded-full">
                 On Sale!
@@ -229,7 +229,7 @@ function Sidebar({ onSelectContent }) {
               onClick={() => onSelectContent("Log Out")}
               className="flex items-center py-2 px-4 rounded hover:bg-blue-500 w-full text-left"
             >
-              <ArrowCircleRightIcon className="h-5 w-5 mr-2" />
+              <ArrowRightCircleIcon className="h-5 w-5 mr-2" />
               Log Out
             </button>
           </li>

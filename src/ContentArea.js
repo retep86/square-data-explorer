@@ -5,8 +5,8 @@ import {
   ChevronDownIcon,
   CogIcon,
   UserIcon,
-  ArrowCircleUpIcon,
-} from "@heroicons/react/outline";
+  ArrowUpCircleIcon,
+} from "@heroicons/react/24/outline";
 
 function ContentArea() {
   const [isCardOpen, setIsCardOpen] = useState(true); // Card is expanded by default
@@ -29,7 +29,7 @@ function ContentArea() {
       id: 3,
       name: "Upgrade to Pro",
       description: "Unlock additional features by upgrading to Pro.",
-      icon: <ArrowCircleUpIcon className="h-6 w-6 text-blue-600" />,
+      icon: <ArrowUpCircleIcon className="h-6 w-6 text-blue-600" />,
       completed: false,
     },
   ]);
