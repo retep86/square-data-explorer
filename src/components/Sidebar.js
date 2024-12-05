@@ -7,7 +7,6 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   BriefcaseIcon,
-  MapPinIcon,
   CircleStackIcon,
   CogIcon,
   HomeIcon,
