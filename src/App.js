@@ -1,33 +1,71 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "./config/firebase";
 import Sidebar from "./components/Sidebar";
-import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import SignUp from "./pages/SignUp";
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
+import { AuthProvider } from "./context/AuthContext";
+
 
 function App() {
-  const [user] = useAuthState(auth); // Firebase hook to check if the user is authenticated
-
   return (
-    <Router>
-      {user ? (
-        <div className="flex min-h-screen">
-          {/* Show Sidebar only if the user is authenticated */}
-          <Sidebar />
-          <main className="flex-1 bg-gray-100 p-6">
-            <Routes>
-              <Route path="/dashboard" element={<Dashboard />} />
-            </Routes>
-          </main>
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            {/* Public Routes */}
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <PublicRoute>
+                  <SignUp />
+                </PublicRoute>
+              }
+            />
+
+            {/* Protected Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <div className="flex">
+                    <Sidebar />
+                    <Dashboard />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+
+<Route path="/forgot-password" element={<ForgotPassword />} />
+
+
+            {/* Redirect all other routes */}
+            <Route
+              path="*"
+              element={
+                <ProtectedRoute>
+                  <div className="flex">
+                    <Sidebar />
+                    <Dashboard />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
         </div>
-      ) : (
-        <Routes>
-          {/* Only show Login page if the user is not authenticated */}
-          <Route path="*" element={<Login />} />
-        </Routes>
-      )}
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 
