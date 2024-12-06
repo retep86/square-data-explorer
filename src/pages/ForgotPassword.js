@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../config/firebase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { CircleStackIcon } from "@heroicons/react/24/outline";
 
 function ForgotPassword() {
@@ -9,6 +9,13 @@ function ForgotPassword() {
   const [successMessage, setSuccessMessage] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && location.state.email) {
+      setEmail(location.state.email);
+    }
+  }, [location.state]);
 
   const handlePasswordReset = async (e) => {
     e.preventDefault();
@@ -27,77 +34,78 @@ function ForgotPassword() {
     }
   };
 
+  const handleBackToLogin = () => {
+    navigate("/login", { state: { email } });
+  };
+
   return (
-    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-50">
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="w-full max-w-3xl bg-white shadow-md rounded-lg overflow-hidden grid grid-cols-1 md:grid-cols-2">
+        {/* Left Section */}
+        <div className="hidden md:flex bg-blue-600 text-white flex-col justify-center items-center p-8">
+          <CircleStackIcon className="h-16 w-16 mb-4" />
+          <h2 className="text-2xl font-bold">Square Data Explorer</h2>
+          <p className="text-center mt-4">
+            Explore your data with ease and efficiency.
+          </p>
+        </div>
+
+        {/* Right Section */}
+        <div className="p-6 md:p-12">
+          <h2 className="text-2xl font-bold text-gray-700 text-center">
+            Forgot Password
+          </h2>
+          <p className="text-center text-sm text-gray-500 mt-2">
+            Enter your email address and we’ll send you a link to reset your
+            password.
+          </p>
+
           {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
+            <div className="bg-red-100 text-red-600 p-3 mt-4 rounded-md text-center">
+              {error}
+            </div>
           )}
           {successMessage && (
-            <div className="text-green-500 text-sm text-center">
+            <div className="bg-green-100 text-green-600 p-3 mt-4 rounded-md text-center">
               {successMessage}
             </div>
           )}
-                <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        {/* App Branding */}
-        <div className="flex items-center justify-center space-x-2 ">
-          <CircleStackIcon className="h-10 w-10 text-blue-600" />
-          <h1 className="text-center text-3xl font-extrabold text-gray-900">
-            Square Data Explorer
-          </h1>
-        </div>
-        <h2 className="mt-6 text-2xl font-bold text-gray-700 text-center">
-          Forgot your password?
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600 mb-8">
-          Enter your email address and we’ll send you a link to reset your
-          password.
-        </p>
-      </div>
-          <form className="space-y-6" onSubmit={handlePasswordReset}>
+
+          <form onSubmit={handlePasswordReset} className="mt-6 space-y-4">
+            {/* Email Field */}
             <div>
-              <label
-                htmlFor="email-address"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email address
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email Address
               </label>
-              <div className="mt-1">
-                <input
-                  id="email-address"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="Enter your email"
-                />
-              </div>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="e.g. jane@example.com"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
 
-            <div>
-              <button
-                type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Send Reset Link
-              </button>
-            </div>
+            {/* Send Reset Link Button */}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Send Reset Link
+            </button>
           </form>
 
-          <div className="mt-6">
-            <div className="text-sm text-center">
-              <button
-                onClick={() => navigate("/login")}
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
-                Back to Login
-              </button>
-            </div>
-          </div>
+          {/* Back to Login Link */}
+          <p className="mt-4 text-center text-sm text-gray-600">
+            <button
+              onClick={handleBackToLogin}
+              className="text-blue-600 hover:underline font-medium"
+            >
+              Back to Login
+            </button>
+          </p>
         </div>
       </div>
     </div>

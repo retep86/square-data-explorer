@@ -1,69 +1,113 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
+import ProtectedLayout from "./layouts/ProtectedLayout";
+import PublicLayout from "./layouts/PublicLayout";
+import  { AuthProvider } from "./context/AuthContext"; // Import your AuthProvider
+import Login from "./components/Login";
+import Logout from "./components/Logout"; // Import Logout
 import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
-import ForgotPassword from "./pages/ForgotPassword";
 import SignUp from "./pages/SignUp";
+import VerificationCheck from "./pages/VerificationCheck";
+import Settings from "./pages/Settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
-import { AuthProvider } from "./context/AuthContext";
+import ForgotPassword from "./pages/ForgotPassword"; // Import ForgotPassword
 
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="App">
-          <Routes>
-            {/* Public Routes */}
-            <Route
-              path="/login"
-              element={
+        <Routes>
+          {/* Public Routes */}
+          <Route
+            path="/login"
+            element={
+              <PublicLayout>
                 <PublicRoute>
                   <Login />
                 </PublicRoute>
-              }
-            />
-            <Route
-              path="/signup"
-              element={
+              </PublicLayout>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <PublicLayout>
+                <PublicRoute>
+                  <ForgotPassword />
+                </PublicRoute>
+              </PublicLayout>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PublicLayout>
                 <PublicRoute>
                   <SignUp />
                 </PublicRoute>
-              }
-            />
+              </PublicLayout>
+            }
+          />
+          <Route
+            path="/verification-check"
+            element={
+              <PublicLayout>
+                <PublicRoute>
+                  <VerificationCheck />
+                </PublicRoute>
+              </PublicLayout>
+            }
+          />
 
-            {/* Protected Routes */}
-            <Route
-              path="/dashboard"
-              element={
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedLayout>
                 <ProtectedRoute>
-                  <div className="flex">
-                    <Sidebar />
-                    <Dashboard />
-                  </div>
+                  <Dashboard />
                 </ProtectedRoute>
-              }
-            />
-
-<Route path="/forgot-password" element={<ForgotPassword />} />
-
-
-            {/* Redirect all other routes */}
-            <Route
-              path="*"
-              element={
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedLayout>
                 <ProtectedRoute>
-                  <div className="flex">
-                    <Sidebar />
-                    <Dashboard />
-                  </div>
+                  <Settings />
                 </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </div>
+              </ProtectedLayout>
+            }
+          />
+
+          {/* Logout Route */}
+          <Route
+            path="/logout"
+            element={
+              <ProtectedLayout>
+                <Logout />
+              </ProtectedLayout>
+            }
+          />
+
+          {/* Default Route */}
+          <Route
+            path="/"
+            element={
+              <PublicLayout>
+                <PublicRoute>
+                  <SignUp />
+                </PublicRoute>
+              </PublicLayout>
+            }
+          />
+
+          {/* 404 Page */}
+          <Route path="*" element={<div>Page Not Found</div>} />
+        </Routes>
       </Router>
     </AuthProvider>
   );

@@ -1,90 +1,59 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { auth, provider } from "../config/firebase"; // Import provider for Google login
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  signInWithPopup,
-} from "firebase/auth";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { auth, provider } from "../config/firebase";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { CircleStackIcon } from "@heroicons/react/24/outline";
 
-function SignUp() {
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSignUp = async (e) => {
+  useEffect(() => {
+    if (location.state && location.state.email) {
+      setEmail(location.state.email);
+    }
+  }, [location.state]);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      // Create user account
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("User Created");
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
 
-      // Send verification email
-      await sendEmailVerification(user);
-      console.log("Email Sent");
-
-      // Redirect to the verification-check page
-      navigate("/verification-check");
+      if (user.emailVerified) {
+        navigate("/dashboard");
+      } else {
+        setError("Please verify your email before logging in.");
+      }
     } catch (err) {
       switch (err.code) {
-        case "auth/email-already-in-use":
-          setError(
-            <div>
-              An account with this email already exists.{" "}
-              <button
-                onClick={() => navigate("/login", { state: { email } })}
-                className="text-blue-600 hover:underline"
-              >
-                Click here to login
-              </button>
-            </div>
-          );
+        case "auth/user-not-found":
+          setError("No account found with this email.");
           break;
-        case "auth/invalid-email":
-          setError("Please enter a valid email address.");
-          break;
-        case "auth/weak-password":
-          setError("Password should be at least 6 characters long.");
+        case "auth/wrong-password":
+          setError("Incorrect password. Please try again.");
           break;
         default:
-          setError(err.message);
+          setError("Failed to log in. Please check your credentials.");
       }
     }
   };
 
-  const handleGoogleSignUp = async () => {
+  const handleGoogleLogin = async () => {
     setError("");
 
     try {
-      // Sign in with Google
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      console.log("Google sign-in successful:", user);
+      console.log("Google sign-in successful:", result.user);
 
       // Redirect to dashboard
       navigate("/dashboard");
     } catch (err) {
-      if (err.code === "auth/account-exists-with-different-credential") {
-        try {
-          // Log the user in automatically if account exists
-          const credential = provider.credentialFromError(err); // Retrieve the correct credential
-          const result = await auth.signInWithCredential(credential);
-          console.log("User logged in:", result.user);
-
-          // Redirect to dashboard
-          navigate("/dashboard");
-        } catch (loginError) {
-          setError("Failed to log in. Please try again.");
-        }
-      } else {
-        setError("Failed to sign up with Google. Please try again.");
-      }
+      setError("Failed to log in with Google. Please try again.");
     }
   };
 
@@ -95,14 +64,16 @@ function SignUp() {
         <div className="hidden md:flex bg-blue-600 text-white flex-col justify-center items-center p-8">
           <CircleStackIcon className="h-16 w-16 mb-4" />
           <h2 className="text-2xl font-bold">Square Data Explorer</h2>
-          <p className="text-center mt-4">Explore your data with ease and efficiency.</p>
+          <p className="text-center mt-4">
+            Explore your data with ease and efficiency.
+          </p>
         </div>
 
         {/* Right Section */}
         <div className="p-6 md:p-12">
-          <h2 className="text-2xl font-bold text-gray-700 text-center">Create Your Account</h2>
+          <h2 className="text-2xl font-bold text-gray-700 text-center">Log In</h2>
           <p className="text-center text-sm text-gray-500 mt-2">
-            Start your journey with us today.
+            Welcome back! Log in to your account.
           </p>
 
           {error && (
@@ -111,10 +82,10 @@ function SignUp() {
             </div>
           )}
 
-          {/* Google Sign-Up Button */}
+          {/* Google Login Button */}
           <div className="mt-6">
             <button
-              onClick={handleGoogleSignUp}
+              onClick={handleGoogleLogin}
               className="w-full bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-md shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
             >
               <img
@@ -122,7 +93,7 @@ function SignUp() {
                 alt="Google"
                 className="h-5 w-5 mr-2"
               />
-              Sign up with Google
+              Log in with Google
             </button>
           </div>
 
@@ -133,24 +104,8 @@ function SignUp() {
             <div className="flex-grow border-t border-gray-300"></div>
           </div>
 
-          {/* Sign-Up Form */}
-          <form onSubmit={handleSignUp} className="space-y-4">
-            {/* Name Field */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Full Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                placeholder="e.g. Jane Doe"
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
+          {/* Login Form */}
+          <form onSubmit={handleLogin} className="space-y-4">
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -183,23 +138,30 @@ function SignUp() {
               />
             </div>
 
-            {/* Sign-Up Button */}
+            {/* Login Button */}
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              Create Account
+              Log In
             </button>
           </form>
 
           <p className="mt-4 text-center text-sm text-gray-600">
-            Already have an account?{" "}
+            Forgot your password?{" "}
             <button
-              onClick={() => navigate("/login", { state: { email } })}
+              onClick={() => navigate("/forgot-password", { state: { email } })}
               className="text-blue-600 hover:underline font-medium"
             >
-              Log in here
+              Reset it here
             </button>
+          </p>
+
+          <p className="mt-4 text-center text-sm text-gray-600">
+            Don't have an account?{" "}
+            <a href="/signup" className="text-blue-600 hover:underline font-medium">
+              Sign up here
+            </a>
           </p>
         </div>
       </div>
@@ -207,4 +169,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default Login;
