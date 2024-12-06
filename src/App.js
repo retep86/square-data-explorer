@@ -12,6 +12,8 @@ import Settings from "./pages/Settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import ForgotPassword from "./pages/ForgotPassword"; // Import ForgotPassword
+import NotFound from "./pages/NotFound"; // Adjust the import path as needed
+
 
 
 function App() {
@@ -106,7 +108,7 @@ function App() {
           />
 
           {/* 404 Page */}
-          <Route path="*" element={<div>Page Not Found</div>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </AuthProvider>
