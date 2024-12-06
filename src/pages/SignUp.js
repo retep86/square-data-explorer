@@ -42,7 +42,7 @@ function SignUp() {
         setError("An account with this email already exists. Logging in...");
         try {
           // Attempt to log in the user
-          const loginResult = await signInWithPopup(auth, provider);
+          // const loginResult = await signInWithPopup(auth, provider);
           navigate("/dashboard");
         } catch (loginError) {
           setError("Failed to log in. Please try again.");
