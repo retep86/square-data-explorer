@@ -13,6 +13,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import ForgotPassword from "./pages/ForgotPassword"; // Import ForgotPassword
 import NotFound from "./pages/NotFound"; // Adjust the import path as needed
+import Payments from "./pages/Payments";
 
 
 
@@ -80,6 +81,16 @@ function App() {
               <ProtectedLayout>
                 <ProtectedRoute>
                   <Settings />
+                </ProtectedRoute>
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/payments/payments"
+            element={
+              <ProtectedLayout>
+                <ProtectedRoute>
+                  <Payments />
                 </ProtectedRoute>
               </ProtectedLayout>
             }

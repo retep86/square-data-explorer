@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, provider } from "../config/firebase"; // Import provider for Google login
+import { auth, provider } from "../config/firebase";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
@@ -12,7 +12,9 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [agreeToTerms, setAgreeToTerms] = useState(false); // Track checkbox state
   const [error, setError] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState(0); // Password strength
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
@@ -20,15 +22,12 @@ function SignUp() {
     setError("");
 
     try {
-      // Create user account
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       console.log("User Created");
 
-      // Send verification email
       await sendEmailVerification(user);
       console.log("Email Sent");
 
-      // Redirect to the verification-check page
       navigate("/verification-check");
     } catch (err) {
       switch (err.code) {
@@ -49,7 +48,7 @@ function SignUp() {
           setError("Please enter a valid email address.");
           break;
         case "auth/weak-password":
-          setError("Password should be at least 6 characters long.");
+          setError("Password does not meet the requirements.");
           break;
         default:
           setError(err.message);
@@ -61,23 +60,19 @@ function SignUp() {
     setError("");
 
     try {
-      // Sign in with Google
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
       console.log("Google sign-in successful:", user);
 
-      // Redirect to dashboard
       navigate("/dashboard");
     } catch (err) {
       if (err.code === "auth/account-exists-with-different-credential") {
         try {
-          // Log the user in automatically if account exists
-          const credential = provider.credentialFromError(err); // Retrieve the correct credential
+          const credential = provider.credentialFromError(err);
           const result = await auth.signInWithCredential(credential);
           console.log("User logged in:", result.user);
 
-          // Redirect to dashboard
           navigate("/dashboard");
         } catch (loginError) {
           setError("Failed to log in. Please try again.");
@@ -86,6 +81,25 @@ function SignUp() {
         setError("Failed to sign up with Google. Please try again.");
       }
     }
+  };
+
+  // Evaluate Password Strength
+  const evaluatePasswordStrength = (password) => {
+    let strength = 0;
+
+    if (password.length >= 12) strength++; // Minimum length of 12
+    if (/[A-Z]/.test(password)) strength++; // Contains an uppercase letter
+    if (/[a-z]/.test(password)) strength++; // Contains a lowercase letter
+    if (/[0-9]/.test(password)) strength++; // Contains a numeric character
+    if (/[^a-zA-Z0-9]/.test(password)) strength++; // Contains a special character
+
+    setPasswordStrength(strength);
+  };
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    evaluatePasswordStrength(newPassword);
   };
 
   return (
@@ -176,17 +190,65 @@ function SignUp() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 required
                 placeholder="********"
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
+              {/* Password Strength Indicator */}
+              <div className="flex mt-2 space-x-2">
+                <div
+                  className={`h-2 flex-grow rounded ${
+                    passwordStrength > 0 ? "bg-red-500" : "bg-gray-300"
+                  }`}
+                ></div>
+                <div
+                  className={`h-2 flex-grow rounded ${
+                    passwordStrength > 2 ? "bg-yellow-500" : "bg-gray-300"
+                  }`}
+                ></div>
+                <div
+                  className={`h-2 flex-grow rounded ${
+                    passwordStrength > 4 ? "bg-green-500" : "bg-gray-300"
+                  }`}
+                ></div>
+              </div>
+              <p className="text-sm text-gray-500 mt-1">
+                Password must include uppercase, lowercase, numeric, special character, and be at least 12 characters long.
+              </p>
+            </div>
+
+            {/* Agree to Terms Checkbox */}
+            <div className="flex items-start">
+              <input
+                id="agree-to-terms"
+                type="checkbox"
+                checked={agreeToTerms}
+                onChange={(e) => setAgreeToTerms(e.target.checked)}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label htmlFor="agree-to-terms" className="ml-2 text-sm text-gray-700">
+                By signing up, you are creating a Square Data Explorer account, and you agree to
+                Square Data Explorer’s{" "}
+                <a href="/terms" className="text-blue-600 hover:underline">
+                  Terms of Use
+                </a>{" "}
+                and{" "}
+                <a href="/privacy" className="text-blue-600 hover:underline">
+                  Privacy Policy
+                </a>.
+              </label>
             </div>
 
             {/* Sign-Up Button */}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              disabled={!agreeToTerms} // Disable if the checkbox is not checked
+              className={`w-full py-2 px-4 rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                agreeToTerms
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
+              }`}
             >
               Create Account
             </button>

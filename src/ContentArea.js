@@ -45,8 +45,8 @@ function ContentArea() {
   };
 
   return (
-    <main className="flex-1 bg-gray-100 p-6">
-      <h2 className="text-3xl font-bold mb-4">Welcome to Data Explorer!</h2>
+    <main className="flex-1 bg-gray-100 p-6 h-screen">
+      <h2 className="text-3xl font-bold mb-4">Welcome to Square Data Explorer!</h2>
       <p className="text-gray-700 mb-6">
         Complete the steps below to get started with your setup.
       </p>

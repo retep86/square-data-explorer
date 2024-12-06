@@ -8,7 +8,7 @@ function ProtectedLayout({ children }) {
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 p-4">{children}</div>
+      <div className="flex-1">{children}</div>
     </div>
   );
 }

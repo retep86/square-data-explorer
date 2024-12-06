@@ -82,12 +82,12 @@ function Sidebar() {
               )}
             </div>
             {expandedSection === "payments" && (
-              <ul className="ml-4 space-y-1">
+              <ul className="space-y-1">
                 {["Payments", "Refunds", "Disputes", "Invoices"].map((item) => (
                   <li key={item}>
                     <button
                       onClick={() => navigate(`/payments/${item.toLowerCase()}`)}
-                      className="block py-2 px-4 rounded hover:bg-blue-500 text-left w-full"
+                      className="block py-2 pl-11 rounded hover:bg-blue-500 text-left w-full"
                     >
                       {item}
                     </button>
@@ -114,14 +114,14 @@ function Sidebar() {
               )}
             </div>
             {expandedSection === "commerce" && (
-              <ul className="ml-4 space-y-1">
+              <ul className=" space-y-1">
                 {["Orders", "Custom Attribute Definitions"].map((item) => (
                   <li key={item}>
                     <button
                       onClick={() =>
                         navigate(`/commerce/${item.toLowerCase().replace(/ /g, "-")}`)
                       }
-                      className="block py-2 px-4 rounded hover:bg-blue-500 text-left w-full"
+                      className="block py-2 pl-11 rounded hover:bg-blue-500 text-left w-full"
                     >
                       {item}
                     </button>
@@ -148,14 +148,14 @@ function Sidebar() {
               )}
             </div>
             {expandedSection === "customers" && (
-              <ul className="ml-4 space-y-1">
+              <ul className="space-y-1">
                 {["Customers", "Customer Groups"].map((item) => (
                   <li key={item}>
                     <button
                       onClick={() =>
                         navigate(`/customers/${item.toLowerCase().replace(/ /g, "-")}`)
                       }
-                      className="block py-2 px-4 rounded hover:bg-blue-500 text-left w-full"
+                      className="block py-2 pl-11 rounded hover:bg-blue-500 text-left w-full"
                     >
                       {item}
                     </button>
