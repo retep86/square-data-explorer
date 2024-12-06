@@ -50,7 +50,7 @@ function Login() {
             Square Data Explorer
           </h1>
         </div>
-        <h2 className="mt-6 text-center text-2xl font-extrabold text-gray-900">
+        <h2 className="mt-6 text-2xl font-bold text-gray-700 text-center">
           Sign in to your account
         </h2>
         <p className="mt-2 mb-8 text-center text-sm text-gray-600">
