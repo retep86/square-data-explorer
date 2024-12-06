@@ -1,27 +1,40 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import {
   CreditCardIcon,
   ChartBarSquareIcon,
-  UserIcon,
+  UserCircleIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   BriefcaseIcon,
   CircleStackIcon,
-  CogIcon,
+  Cog6ToothIcon,
   HomeIcon,
-  ArrowUpCircleIcon,
+  ArrowUpOnSquareStackIcon,
   QuestionMarkCircleIcon,
-  ArrowRightCircleIcon,
+  ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
+import { signOut } from "firebase/auth";
+import { auth } from "../config/firebase";
+import { useNavigate } from "react-router-dom";
 
 function Sidebar({ onSelectContent }) {
   const [expandedSection, setExpandedSection] = useState(null); // Store only one expanded section
+  const navigate = useNavigate();
 
   const toggleSection = (section) => {
     setExpandedSection((prevSection) =>
       prevSection === section ? null : section
     ); // Collapse if already open, else expand
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      console.log("User logged out successfully");
+      navigate("/login"); // Redirect to login page
+    } catch (error) {
+      console.error("Error logging out:", error.message);
+    }
   };
 
   return (
@@ -36,13 +49,15 @@ function Sidebar({ onSelectContent }) {
       <nav className="flex-1 overflow-y-auto">
         <ul className="space-y-2">
           {/* Dashboard */}
-          <Link
-              to="/"
+          <li>
+            <button
+              onClick={() => onSelectContent("Dashboard")}
               className="flex items-center py-2 px-4 rounded hover:bg-blue-500 w-full text-left font-bold"
             >
               <HomeIcon className="h-5 w-5 mr-2" />
               Dashboard
-            </Link>
+            </button>
+          </li>
 
           {/* Payments */}
           <li>
@@ -124,7 +139,7 @@ function Sidebar({ onSelectContent }) {
               onClick={() => toggleSection("customers")}
             >
               <div className="flex items-center">
-                <UserIcon className="h-5 w-5 mr-2" />
+                <UserCircleIcon className="h-5 w-5 mr-2" />
                 <span>Customers</span>
               </div>
               {expandedSection === "customers" ? (
@@ -198,7 +213,7 @@ function Sidebar({ onSelectContent }) {
               onClick={() => onSelectContent("Upgrade to Pro")}
               className="flex items-center py-2 px-4 rounded hover:bg-blue-500 w-full text-left relative"
             >
-              <ArrowUpCircleIcon className="h-5 w-5 mr-2" />
+              <ArrowUpOnSquareStackIcon className="h-5 w-5 mr-2" />
               Upgrade
               <span className="ml-auto text-sm bg-red-500 text-white px-2 py-0.5 rounded-full">
                 On Sale!
@@ -215,20 +230,20 @@ function Sidebar({ onSelectContent }) {
             </button>
           </li>
           <li>
-            <Link
-              to="/settings"
+            <button
+              onClick={() => onSelectContent("Settings")}
               className="flex items-center py-2 px-4 rounded hover:bg-blue-500 w-full text-left"
             >
-              <CogIcon className="h-5 w-5 mr-2" />
+              <Cog6ToothIcon className="h-5 w-5 mr-2" />
               Settings
-            </Link>
+            </button>
           </li>
           <li>
             <button
-              onClick={() => onSelectContent("Log Out")}
+              onClick={handleLogout}
               className="flex items-center py-2 px-4 rounded hover:bg-blue-500 w-full text-left"
             >
-              <ArrowRightCircleIcon className="h-5 w-5 mr-2" />
+              <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
               Log Out
             </button>
           </li>
