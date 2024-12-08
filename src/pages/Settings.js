@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ChevronUpIcon,
   ChevronDownIcon,
   UserIcon,
   LockClosedIcon,
 } from "@heroicons/react/24/outline";
-import { auth, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "../config/firebase";
+import { auth, db } from "../config/firebase";
+import {
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  updatePassword,
+} from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 function Settings() {
   const [sections, setSections] = useState([
@@ -13,18 +19,7 @@ function Settings() {
       id: 1,
       name: "Account Information",
       icon: <UserIcon className="h-6 w-6 text-blue-600" />,
-      content: (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-500">Full Name</span>
-            <span className="text-sm text-gray-900">John Doe</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-500">Email Address</span>
-            <span className="text-sm text-gray-900">johndoe@example.com</span>
-          </div>
-        </div>
-      ),
+      content: <div className="space-y-4">Loading...</div>, // Placeholder for user data
       isOpen: true,
     },
     {
@@ -36,11 +31,64 @@ function Settings() {
     },
   ]);
 
+  const [userData, setUserData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (auth.currentUser) {
+        try {
+          const userRef = doc(db, "users", auth.currentUser.uid);
+          const userDoc = await getDoc(userRef);
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            setUserData(data);
+
+            // Update the Account Information section with user data
+            setSections((prevSections) =>
+              prevSections.map((section) =>
+                section.id === 1
+                  ? {
+                      ...section,
+                      content: (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-gray-500">
+                              Full Name
+                            </span>
+                            <span className="text-sm text-gray-900">
+                              {data.name || "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-gray-500">
+                              Email Address
+                            </span>
+                            <span className="text-sm text-gray-900">
+                              {data.email || "N/A"}
+                            </span>
+                          </div>
+                        </div>
+                      ),
+                    }
+                  : section
+              )
+            );
+          } else {
+            console.log("No user data found.");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   // Toggle Section
   const toggleSection = (id) => {

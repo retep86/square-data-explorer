@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, provider } from "../config/firebase";
+import { auth, db, provider } from "../config/firebase";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   signInWithPopup,
 } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore"; // Firestore imports
 import { CircleStackIcon } from "@heroicons/react/24/outline";
 
 function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [agreeToTerms, setAgreeToTerms] = useState(false); // Track checkbox state
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [error, setError] = useState("");
-  const [passwordStrength, setPasswordStrength] = useState(0); // Password strength
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
@@ -22,11 +22,20 @@ function SignUp() {
     setError("");
 
     try {
+      // Create user with email and password
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("User Created");
 
+      // Save user data in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        name,
+        email,
+        createdAt: new Date(),
+        emailVerified: user.emailVerified,
+      });
+
+      // Send verification email
       await sendEmailVerification(user);
-      console.log("Email Sent");
+      console.log("Verification email sent");
 
       navigate("/verification-check");
     } catch (err) {
@@ -48,7 +57,7 @@ function SignUp() {
           setError("Please enter a valid email address.");
           break;
         case "auth/weak-password":
-          setError("Password does not meet the requirements.");
+          setError("Password should be at least 6 characters long.");
           break;
         default:
           setError(err.message);
@@ -63,43 +72,25 @@ function SignUp() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      console.log("Google sign-in successful:", user);
+      // Check if the user already exists in Firestore
+      const userRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userRef);
 
+      if (!userDoc.exists()) {
+        // Save user data in Firestore
+        await setDoc(userRef, {
+          name: user.displayName || "Google User",
+          email: user.email,
+          createdAt: new Date(),
+          emailVerified: user.emailVerified,
+        });
+      }
+
+      console.log("Google sign-in successful:", user);
       navigate("/dashboard");
     } catch (err) {
-      if (err.code === "auth/account-exists-with-different-credential") {
-        try {
-          const credential = provider.credentialFromError(err);
-          const result = await auth.signInWithCredential(credential);
-          console.log("User logged in:", result.user);
-
-          navigate("/dashboard");
-        } catch (loginError) {
-          setError("Failed to log in. Please try again.");
-        }
-      } else {
-        setError("Failed to sign up with Google. Please try again.");
-      }
+      setError("Failed to sign up with Google. Please try again.");
     }
-  };
-
-  // Evaluate Password Strength
-  const evaluatePasswordStrength = (password) => {
-    let strength = 0;
-
-    if (password.length >= 12) strength++; // Minimum length of 12
-    if (/[A-Z]/.test(password)) strength++; // Contains an uppercase letter
-    if (/[a-z]/.test(password)) strength++; // Contains a lowercase letter
-    if (/[0-9]/.test(password)) strength++; // Contains a numeric character
-    if (/[^a-zA-Z0-9]/.test(password)) strength++; // Contains a special character
-
-    setPasswordStrength(strength);
-  };
-
-  const handlePasswordChange = (e) => {
-    const newPassword = e.target.value;
-    setPassword(newPassword);
-    evaluatePasswordStrength(newPassword);
   };
 
   return (
@@ -190,32 +181,11 @@ function SignUp() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={handlePasswordChange}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="********"
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
-              {/* Password Strength Indicator */}
-              <div className="flex mt-2 space-x-2">
-                <div
-                  className={`h-2 flex-grow rounded ${
-                    passwordStrength > 0 ? "bg-red-500" : "bg-gray-300"
-                  }`}
-                ></div>
-                <div
-                  className={`h-2 flex-grow rounded ${
-                    passwordStrength > 2 ? "bg-yellow-500" : "bg-gray-300"
-                  }`}
-                ></div>
-                <div
-                  className={`h-2 flex-grow rounded ${
-                    passwordStrength > 4 ? "bg-green-500" : "bg-gray-300"
-                  }`}
-                ></div>
-              </div>
-              <p className="text-sm text-gray-500 mt-1">
-                Password must include uppercase, lowercase, numeric, special character, and be at least 12 characters long.
-              </p>
             </div>
 
             {/* Agree to Terms Checkbox */}
@@ -243,7 +213,7 @@ function SignUp() {
             {/* Sign-Up Button */}
             <button
               type="submit"
-              disabled={!agreeToTerms} // Disable if the checkbox is not checked
+              disabled={!agreeToTerms}
               className={`w-full py-2 px-4 rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                 agreeToTerms
                   ? "bg-blue-600 text-white hover:bg-blue-700"
