@@ -1,11 +1,14 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function VerifyEmail() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || "your email"; // Retrieve email from state, or fallback if not available
 
   const handleGoToLogin = () => {
-    navigate("/login");
+    // Pass email to the login page
+    navigate("/login", { state: { email } });
   };
 
   return (
@@ -13,7 +16,7 @@ function VerifyEmail() {
       <div className="w-full max-w-md bg-white shadow-md rounded-lg p-6 text-center">
         <h2 className="text-2xl font-bold text-gray-700">Verify Your Email</h2>
         <p className="text-gray-600 mt-4">
-          A verification link has been sent to your email address. Please check
+          A verification link has been sent to your email address: <strong>{email}</strong>. Please check
           your inbox and click the link to verify your email.
         </p>
         <p className="text-gray-600 mt-4">

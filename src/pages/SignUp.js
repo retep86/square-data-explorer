@@ -37,7 +37,8 @@ function SignUp() {
       await sendEmailVerification(user);
       console.log("Verification email sent");
 
-      navigate("/verification-check");
+      // Navigate to verification page with email
+      navigate("/verification-check", { state: { email } });
     } catch (err) {
       switch (err.code) {
         case "auth/email-already-in-use":

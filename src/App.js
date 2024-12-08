@@ -2,20 +2,21 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 import PublicLayout from "./layouts/PublicLayout";
-import  { AuthProvider } from "./context/AuthContext"; // Import your AuthProvider
+import { AuthProvider } from "./context/AuthContext";
+import { TimeoutProvider } from "./components/TimeoutProvider";
 import Login from "./components/Login";
-import Logout from "./components/Logout"; // Import Logout
+import Logout from "./components/Logout";
 import Dashboard from "./pages/Dashboard";
 import SignUp from "./pages/SignUp";
 import VerificationCheck from "./pages/VerificationCheck";
 import Settings from "./pages/Settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
-import ForgotPassword from "./pages/ForgotPassword"; // Import ForgotPassword
-import NotFound from "./pages/NotFound"; // Adjust the import path as needed
+import ForgotPassword from "./pages/ForgotPassword";
+import NotFound from "./pages/NotFound";
 import Payments from "./pages/Payments";
-
-
+import Success from "./pages/Success"; // Import the Success page
+import Cancel from "./pages/Cancel"; // Import the Cancel page
 
 function App() {
   return (
@@ -63,36 +64,58 @@ function App() {
               </PublicLayout>
             }
           />
+          <Route
+            path="/success"
+            element={
+              <PublicLayout>
+                <Success />
+              </PublicLayout>
+            }
+          />
+          <Route
+            path="/cancel"
+            element={
+              <PublicLayout>
+                <Cancel />
+              </PublicLayout>
+            }
+          />
 
           {/* Protected Routes */}
           <Route
             path="/dashboard"
             element={
-              <ProtectedLayout>
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              </ProtectedLayout>
+              <TimeoutProvider>
+                <ProtectedLayout>
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                </ProtectedLayout>
+              </TimeoutProvider>
             }
           />
           <Route
             path="/settings"
             element={
-              <ProtectedLayout>
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              </ProtectedLayout>
+              <TimeoutProvider>
+                <ProtectedLayout>
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                </ProtectedLayout>
+              </TimeoutProvider>
             }
           />
           <Route
             path="/payments/payments"
             element={
-              <ProtectedLayout>
-                <ProtectedRoute>
-                  <Payments />
-                </ProtectedRoute>
-              </ProtectedLayout>
+              <TimeoutProvider>
+                <ProtectedLayout>
+                  <ProtectedRoute>
+                    <Payments />
+                  </ProtectedRoute>
+                </ProtectedLayout>
+              </TimeoutProvider>
             }
           />
 
