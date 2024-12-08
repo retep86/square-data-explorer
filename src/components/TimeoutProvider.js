@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { ClockIcon } from "@heroicons/react/24/outline";
 
 const TimeoutContext = createContext();
 
 export const TimeoutProvider = ({ children }) => {
     const [isTimeoutModalVisible, setIsTimeoutModalVisible] = useState(false);
-    const [countdown, setCountdown] = useState(60); // 60-second countdown
+    const [countdown, setCountdown] = useState(60);
     let timeoutTimer, countdownTimer;
 
     const resetInactivityTimer = () => {
@@ -18,7 +19,7 @@ export const TimeoutProvider = ({ children }) => {
             setIsTimeoutModalVisible(true);
             startCountdown(); // Start the countdown when the modal shows
         }, 10 * 60 * 1000); // 10 minutes
-   //     }, 10 * 1000); // 10 seconds
+    //   }, 10 * 1000); // 10 seconds
     };
 
     const startCountdown = () => {
@@ -64,18 +65,62 @@ export const TimeoutProvider = ({ children }) => {
         <TimeoutContext.Provider value={{ extendSession }}>
             {children}
             {isTimeoutModalVisible && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-                        <h2 className="text-xl font-bold mb-4">Are you still there?</h2>
-                        <p className="text-gray-700 mb-4">
-                            Your session will expire in <span>{countdown}</span> seconds.
-                        </p>
-                        <button
-                            onClick={extendSession}
-                            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                        >
-                            Stay Logged In
-                        </button>
+                <div className="fixed inset-0 z-50 overflow-y-auto">
+                    <div className="min-h-screen px-4 text-center">
+                        {/* Background overlay with blur */}
+                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
+
+                        {/* Modal positioning */}
+                        <div className="fixed inset-0 flex items-center justify-center">
+                            {/* Modal content */}
+                            <div className="relative bg-white dark:bg-gray-800 w-full max-w-sm rounded-2xl shadow-2xl p-8 transform transition-all">
+                                {/* Timer Icon */}
+                                <div className="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 mb-6">
+                                    <ClockIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                                </div>
+
+                                {/* Title */}
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                                    Session Timeout
+                                </h2>
+
+                                {/* Description */}
+                                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                                    For your security, your session will expire in:
+                                </p>
+
+                                {/* Countdown Timer */}
+                                <div className="mb-8">
+                                    <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">
+                                        {countdown}
+                                    </div>
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                                        seconds
+                                    </div>
+                                </div>
+
+                                {/* Buttons */}
+                                <div className="space-y-3">
+                                    <button
+                                        onClick={extendSession}
+                                        className="w-full px-4 py-3 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors"
+                                    >
+                                        Stay Logged In
+                                    </button>
+                                    <button
+                                        onClick={logoutUser}
+                                        className="w-full px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+                                    >
+                                        Logout Now
+                                    </button>
+                                </div>
+
+                                {/* Security Note */}
+                                <p className="mt-6 text-xs text-gray-500 dark:text-gray-400">
+                                    This timeout helps protect your information from unauthorized access.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

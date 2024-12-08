@@ -70,19 +70,23 @@ function Sidebar() {
   const navItem = (icon, text, onClick, isActiveRoute = false, showChevron = false, isExpanded = false) => (
     <div
       onClick={onClick}
-      className={`flex items-center cursor-pointer w-full
-        ${isCollapsed ? 'justify-center' : 'p-2 justify-between rounded hover:bg-blue-500'}
-        ${!isCollapsed && isActiveRoute ? "bg-blue-500" : ""}`}
+      className={`flex items-center cursor-pointer w-full transition-all duration-200
+        ${isCollapsed ? 'justify-center' : 'p-2.5 justify-between rounded-lg hover:bg-blue-700/50 dark:hover:bg-gray-700/50'}
+        ${!isCollapsed && isActiveRoute ? "bg-blue-700/50 dark:bg-gray-700/50" : ""}`}
     >
-      <div className={`flex items-center min-w-0 ${isCollapsed ? 'p-2 rounded hover:bg-blue-500' : ''} 
-        ${isCollapsed && isActiveRoute ? 'bg-blue-500' : ''}`}>
+      <div className={`flex items-center min-w-0 ${isCollapsed ? 'p-2.5 rounded-lg hover:bg-blue-700/50 dark:hover:bg-gray-700/50' : ''} 
+        ${isCollapsed && isActiveRoute ? 'bg-blue-700/50 dark:bg-gray-700/50' : ''}`}>
         {React.cloneElement(icon, { 
-          className: `h-5 w-5 shrink-0 ${isActiveRoute ? 'text-white' : ''}`
+          className: `h-5 w-5 shrink-0 ${isActiveRoute ? 'text-white' : 'text-blue-100 dark:text-gray-300'}`
         })}
-        {!isCollapsed && <span className="ml-2 truncate">{text}</span>}
+        {!isCollapsed && (
+          <span className={`ml-3 truncate ${isActiveRoute ? 'text-white font-medium' : 'text-blue-100 dark:text-gray-300'}`}>
+            {text}
+          </span>
+        )}
       </div>
       {!isCollapsed && showChevron && (
-        <div className="ml-2 shrink-0">
+        <div className="ml-2 shrink-0 text-blue-100 dark:text-gray-300">
           {isExpanded ? (
             <ChevronUpIcon className="h-4 w-4" />
           ) : (
@@ -95,35 +99,38 @@ function Sidebar() {
 
   return (
     <aside 
-      className={`bg-blue-600 text-white h-screen sticky top-0 transition-all duration-300 flex flex-col
-        ${isCollapsed ? 'w-16' : 'w-64'}`}
+      className={`bg-blue-600 dark:bg-gray-800 h-screen sticky top-0 transition-all duration-300 flex flex-col
+        border-r border-blue-500/20 dark:border-gray-700
+        ${isCollapsed ? 'w-20' : 'w-64'}`}
     >
       {/* Header */}
-      <div className={`flex items-center p-4 h-16 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+      <div className={`flex items-center h-16 px-4 border-b border-blue-500/20 dark:border-gray-700
+        ${isCollapsed ? 'justify-center' : 'justify-between'}`}
+      >
         {!isCollapsed && (
           <div className="flex items-center flex-1 min-w-0">
-            <CircleStackIcon className="h-5 w-5 shrink-0" />
-            <h1 className="text-lg font-bold ml-2 truncate">Square Data Explorer</h1>
+            <CircleStackIcon className="h-6 w-6 text-blue-100 dark:text-gray-300" />
+            <h1 className="text-lg font-bold ml-3 truncate text-white">
+              Square Data Explorer
+            </h1>
           </div>
         )}
         <button
           onClick={toggleSidebar}
-          className="p-1 hover:bg-blue-500 rounded shrink-0"
+          className="p-1.5 rounded-lg hover:bg-blue-700/50 dark:hover:bg-gray-700/50 transition-colors"
           title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >
           {isCollapsed ? (
-            <ChevronDoubleRightIcon className="h-5 w-5" />
+            <ChevronDoubleRightIcon className="h-5 w-5 text-blue-100 dark:text-gray-300" />
           ) : (
-            <ChevronDoubleLeftIcon className="h-5 w-5" />
+            <ChevronDoubleLeftIcon className="h-5 w-5 text-blue-100 dark:text-gray-300" />
           )}
         </button>
       </div>
 
-      <div className="border-b border-blue-500" />
-
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4">
-        <ul className={`space-y-1 ${isCollapsed ? 'px-0' : 'px-3'}`}>
+        <ul className={`space-y-1.5 px-3`}>
           <li>
             {navItem(
               <HomeIcon />,
@@ -148,10 +155,10 @@ function Sidebar() {
                   <li key={item}>
                     <button
                       onClick={() => navigate(`/payments/${item.toLowerCase()}`)}
-                      className={`w-full py-2 pl-11 pr-4 text-left rounded
+                      className={`w-full py-2.5 pl-11 pr-4 text-left rounded-lg transition-colors duration-200
                         ${isActive(`/payments/${item.toLowerCase()}`)
-                          ? "bg-blue-500"
-                          : "hover:bg-blue-500"
+                          ? "bg-blue-700/50 dark:bg-gray-700/50 text-white font-medium"
+                          : "text-blue-100 dark:text-gray-300 hover:bg-blue-700/30 dark:hover:bg-gray-700/30"
                         }`}
                     >
                       {item}
@@ -177,10 +184,10 @@ function Sidebar() {
                   <li key={item}>
                     <button
                       onClick={() => navigate(`/commerce/${item.toLowerCase().replace(/ /g, "-")}`)}
-                      className={`w-full py-2 pl-11 pr-4 text-left rounded
+                      className={`w-full py-2.5 pl-11 pr-4 text-left rounded-lg transition-colors duration-200
                         ${isActive(`/commerce/${item.toLowerCase().replace(/ /g, "-")}`)
-                          ? "bg-blue-500"
-                          : "hover:bg-blue-500"
+                          ? "bg-blue-700/50 dark:bg-gray-700/50 text-white font-medium"
+                          : "text-blue-100 dark:text-gray-300 hover:bg-blue-700/30 dark:hover:bg-gray-700/30"
                         }`}
                     >
                       {item}
@@ -206,10 +213,10 @@ function Sidebar() {
                   <li key={item}>
                     <button
                       onClick={() => navigate(`/customers/${item.toLowerCase().replace(/ /g, "-")}`)}
-                      className={`w-full py-2 pl-11 pr-4 text-left rounded
+                      className={`w-full py-2.5 pl-11 pr-4 text-left rounded-lg transition-colors duration-200
                         ${isActive(`/customers/${item.toLowerCase().replace(/ /g, "-")}`)
-                          ? "bg-blue-500"
-                          : "hover:bg-blue-500"
+                          ? "bg-blue-700/50 dark:bg-gray-700/50 text-white font-medium"
+                          : "text-blue-100 dark:text-gray-300 hover:bg-blue-700/30 dark:hover:bg-gray-700/30"
                         }`}
                     >
                       {item}
@@ -223,8 +230,8 @@ function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="mt-auto border-t border-blue-500">
-        <ul className={`space-y-1 ${isCollapsed ? 'p-0 py-3' : 'p-3'}`}>
+      <div className="mt-auto border-t border-blue-500/20 dark:border-gray-700">
+        <ul className={`space-y-1.5 p-3`}>
           <li>
             {navItem(
               <Cog6ToothIcon />,
